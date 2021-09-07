@@ -1025,8 +1025,8 @@ def linkage(y, method='single', metric='euclidean', optimal_ordering=False):
            leaf ordering for hierarchical clustering", 2001. Bioinformatics
            :doi:`10.1093/bioinformatics/17.suppl_1.S22`
 
-    Examples
-    --------
+    Example 1
+    ---------
     >>> from scipy.cluster.hierarchy import dendrogram, linkage
     >>> from matplotlib import pyplot as plt
     >>> X = [[i] for i in [2, 8, 0, 4, 1, 9, 9, 0]]
@@ -1039,6 +1039,26 @@ def linkage(y, method='single', metric='euclidean', optimal_ordering=False):
     >>> fig = plt.figure(figsize=(25, 10))
     >>> dn = dendrogram(Z)
     >>> plt.show()
+    
+    Example 2
+    ---------
+    >>> from scipy.cluster.hierarchy import linkage
+    >>> label=['apple','peach','goyava','banana']
+    >>> uc_dist_matrix= [[0, 0.022, 0.031,0.053],  #a uncondensed distance matrix with unknown metric between the four fruits
+    >>>                  [0.022, 0, 0.029, 0.049],
+    >>>                  [0.031, 0.029, 0, 0.049],
+    >>>                  [0.053,0.049,0.049,0]]
+    >>> c_dist_matrix = [item for i in range(1,len(uc_dist_matrix))for item in uc_dist_matrix[i][0:i] ] #the corresponding condensed distance matrix, thus one of the side of the diagonal flatten.
+    [0.022,0.031,0.029,0.053,0.049,0.049]
+    >>> Z = linkage(c_dist_matrix,method='average')  # UPGMA algorithm
+    >>> Z
+    array([[0.        , 1.        , 0.022     , 2.        ],
+           [3.        , 4.        , 0.039     , 3.        ],
+           [2.        , 5.        , 0.04433333, 4.        ]])
+    # read as:
+    # Z[0,0]: 0 (index of 'apple') clusters with Z[0,1]:1 (index of 'peach') with a distance of Z[0,2]=0.022 and they form a cluster of Z[0,3]=2 leaves
+    # Z[1,0]: 0 (index of 'banana') clusters with Z[1,1]:4 (not an initial index, first number beyond the number of initial index thus the first cluster in Z, i.e., the cluster of 'apple' and 'peach') with a distance of Z[1,2]=0.039 and they form a cluster of Z[1,3]=3 leaves
+    # Z[2,0]: 0 (index of 'goyava') clusters with Z[2,1]:5 (not an initial index, second number beyond the number of initial index thus the second cluster in Z, i.e., the cluster of 'apple','peach' and 'banana') with a distance of Z[2,2]=0.0443 and they form a cluster of Z[2,3]=4 leaves
     """
     if method not in _LINKAGE_METHODS:
         raise ValueError("Invalid method: {0}".format(method))
